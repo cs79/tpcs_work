@@ -2,18 +2,19 @@
 
 ### Data cleaning and preparation
 
-1. Load data into a single string object for tokenization
-2. tokenize into a frequency table
-3. analyze frequency table for % of words remaining at "continuous" integer threshholds of frequencies for dropping a word
-4. drop words that fall below the elbow of the threshhold
-5. choice about profanity dropping or not
-6. choice about keeping weird characters or not
+1. Load data into a single string object for CLEANUP and tokenization
+2. Clean the string using a bunch of regexes to strip out undesired stuff
+3. tokenize into a frequency table
+4. analyze frequency table for % of words remaining at "continuous" integer threshholds of frequencies for dropping a word
+5. drop words that fall below the elbow of the threshhold
+6. choice about profanity dropping or not
+7. choice about keeping weird characters or not
 
-7. (?) as part of step 1 above, insert a special character sequence / sentinel at the end of each tweet / instance of text / sentence even -- may be hard to tell where sentences end (try different regexes for patterns like `*._` and so forth)
+8. (?) as part of step 1 above, insert a special character sequence / sentinel at the end of each tweet / instance of text / sentence even -- may be hard to tell where sentences end (try different regexes for patterns like `*._` and so forth)
 
 ### Frequency and sequence analysis
 
-1. generate n-grams based on stopping character in (7) above
+1. generate n-grams based on stopping character in (8) above
 2. get n-gram frequencies
 
 Could do this either as individual frequency tables for each n, or as one big table going up to whatever the max n ends up being (4?) but the first approach seems preferable perhaps...

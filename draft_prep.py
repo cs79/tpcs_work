@@ -28,12 +28,19 @@ f.close()
 # blogs = Text('Coursera-SwiftKey/final/en_US/en_US.blogs.txt')
 '''
 
+## clean up the text
+
+# trim multi-whitespace down to single whitespace
+# eliminate single-letter instances that are not "I" or "A"
+# eliminate non-apostraphe punctuation (replace with a whitespace to preserve hyphenated things)
+
+
 # now follow approach strategy
 
 def find_ngrams(input_list, n):
   return zip(*[input_list[i:] for i in range(n)])
 
-## stupidly simple alternative to the longer function below
+## stupidly simple alternative to the longer function below -- this appears to work well
 def simple_ngram_build(text, max_n = 4):
     ngram_dict = dict()
     ngrams = find_ngrams(text, max_n)
@@ -46,6 +53,7 @@ def simple_ngram_build(text, max_n = 4):
 
     return ngram_dict
 
+## next idea: build max_n of 1 greater than what we want, then "trim" all n-grams by 1 gram and make a dict of the trimmed gram frequencies
 
 # function to build n-gram dict from a list of words (text)
 def build_ngram_dict(text, max_n = 4):
@@ -89,7 +97,8 @@ Might be ok to just grab the frequencies directly when using the "find_ngrams" f
 from __future__ import division
 testlength = 10000
 test = rawtweets.split(" ")[:testlength]
-%timeit testdict = build_ngram_dict(test)
+%timeit testdict = simple_ngram_build(test)
+# %timeit testdict = build_ngram_dict(test)
 print('^^^ time taken to cover ' + str(testlength / len(test)) + ' percent of tweet corpus')
 
 
