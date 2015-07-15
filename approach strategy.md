@@ -12,9 +12,17 @@
 
 8. (?) as part of step 1 above, insert a special character sequence / sentinel at the end of each tweet / instance of text / sentence even -- may be hard to tell where sentences end (try different regexes for patterns like `*._` and so forth)
 
+### Text preprocessing
+
+1. Get text as a flat string
+2. Drop all non-apostraphe punctuation
+3. Strip all whitespace down to 1 space
+4. Make all letters lowercase (this will screw with things later)
+
+
 ### Frequency and sequence analysis
 
-1. generate n-grams based on stopping character in (8) above
+1. generate n-grams based on stopping character in (8) above -- can do this on a per-tweet or per-sentence basis (using a find_ngram type function and building up the dictionary stepwise per tweet or per sentence)
 2. get n-gram frequencies
 
 Could do this either as individual frequency tables for each n, or as one big table going up to whatever the max n ends up being (4?) but the first approach seems preferable perhaps...

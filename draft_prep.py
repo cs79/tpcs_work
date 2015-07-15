@@ -1,8 +1,5 @@
 import os
 import codecs
-import nltk
-from nltk.corpus import CorpusReader
-from nltk import Text, FreqDist
 from __future__ import division
 
 os.chdir('C:/Users/Alex/Dropbox/Coursera/Capstone')
@@ -14,21 +11,20 @@ f = codecs.open('Coursera-SwiftKey/final/en_US/en_US.twitter.txt', encoding='utf
 rawtweets = f.read()
 f.close()
 
+#################################
+# Text Cleaning / Preprocessing #
+#################################
+import re
+import string
 
-'''
-# nltk stuff that doesn't look promising:
------------------------------------------
-# tweetTokens = nltk.word_tokenize(rawtweets)
-# tweets = Text(rawtweets.read())
-# tweetFreqDist = FreqDist(tweets)
-# tweetHapaxes = tweetFreqDist.hapaxes()
-
-# tweets = Text('Coursera-SwiftKey/final/en_US/en_US.twitter.txt')
-# news = Text('Coursera-SwiftKey/final/en_US/en_US.news.txt')
-# blogs = Text('Coursera-SwiftKey/final/en_US/en_US.blogs.txt')
-'''
-
-## clean up the text
+whitelist = string.letters + string.digits + ' ' + '\''
+rawtext = rawtweets
+cleantext = ''
+for char in rawtext:
+    if char in whitelist:
+        cleantext += char
+    else:
+        cleantext +- ''
 
 # trim multi-whitespace down to single whitespace
 # eliminate single-letter instances that are not "I" or "A"
@@ -91,6 +87,28 @@ above function currently works but double-counts things for appearing as sub-n-g
 Might be ok to just grab the frequencies directly when using the "find_ngrams" function (i.e. increment 1 each for each ngram found by the function and that's it)
 
 '''
+
+
+def predict(input_text, lookup_dict, max_n):
+    in_list = input_text.split()
+    ngram_dict = lookup_dict
+    to_predict = list()
+    if len(in_list) == 0:
+        return get_most_frequent_1gram()    # write a function to find the most frequent single word
+    else:
+        for i <= len(in_list) <= max_n:
+            to_predict.append() # the trailing n-grams -- need to figure out how to do this, could write as a separate function
+
+    # given new list of n-grams to_predict, look up those list items in the dict and weight the values according to approach strategy method (or something similar)
+
+    predicted_word = # result of weighted prediction
+
+    return predicted_word
+
+
+
+
+
 ###############
 # timing test #
 ###############
@@ -102,9 +120,9 @@ test = rawtweets.split(" ")[:testlength]
 print('^^^ time taken to cover ' + str(testlength / len(test)) + ' percent of tweet corpus')
 
 
-
-
-
+################################
+# Pickling -- bad idea I think #
+################################
 # pickle our tweet dict for playing around with later, though honestly it didn't take as long as I thought it would to run the above code on the whole thing rather than the test subset
 #pickling takes way too much space, and time -- easier to just re-run the dict, and it'll be faster / better once i do pre-processing on the text before even creating the dict (and if i fix the n-gram multi-counting)
 # probably a way to export a dict as something else, too, rather than pickling -- there has to be a better way to do this
@@ -113,3 +131,21 @@ output = open('pickles/tweetdict.pkl', 'wb')
 pickle.dump(tweetdict, output)
 loadfile = open('pickles/tweetdict.pkl', 'rb')
 testload = pickle.load(loadfile)
+
+
+'''
+# nltk stuff that doesn't look promising:
+-----------------------------------------
+import nltk
+from nltk.corpus import CorpusReader
+from nltk import Text, FreqDist
+
+tweetTokens = nltk.word_tokenize(rawtweets)
+tweets = Text(rawtweets.read())
+tweetFreqDist = FreqDist(tweets)
+tweetHapaxes = tweetFreqDist.hapaxes()
+
+tweets = Text('Coursera-SwiftKey/final/en_US/en_US.twitter.txt')
+news = Text('Coursera-SwiftKey/final/en_US/en_US.news.txt')
+blogs = Text('Coursera-SwiftKey/final/en_US/en_US.blogs.txt')
+'''
