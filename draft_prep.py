@@ -11,22 +11,41 @@ f = codecs.open('Coursera-SwiftKey/final/en_US/en_US.twitter.txt', encoding='utf
 rawtweets = f.read()
 f.close()
 
+# try reading in a file one line at at a time and adding a period as a sentinel, then use below re method
+
+
 #################################
 # Text Cleaning / Preprocessing #
 #################################
 import re
 import string
 
-whitelist = string.letters + string.digits + ' ' + '\''
-rawtext = rawtweets
-cleantext = ''
-for char in rawtext:
-    if char in whitelist:
-        cleantext += char
-    else:
-        cleantext +- ''
+# lowercase everything
+rawtext = rawtweets.lower()
+# regex to strip punctuation except for ' . ! ? - (for hyphenated words)
+rawtext = re.sub('["#$%&\()*+,/:;<=>@[\\]^_`{|}~]', '', rawtext)
+# regex to trim whitespace down to 1 space
+rawtext = re.sub('\s+', ' ', rawtext)
+# re-sub . for other sentence-enders so that i can use . as a sentinel for splitting into lists
+rawtext = re.sub('[!?]', '.', rawtext)
+# trim sentinel periods down to a single .
+rawtext = re.sub('\.+', '.', rawtext)
+# eliminate numbers
 
-# trim multi-whitespace down to single whitespace
+# eliminate single-letters that aren't A, I, (any others i can think of)
+
+
+# get cleantext as a list of lists of words, each superset list is a "sentence" with semantic meaning to the ordering of the words
+# each subset list is the words in those sentence broken into a list for ngram parsing
+cleantext = [sentence.split() for sentence in rawtext.split('.')]
+
+
+
+# save it for later
+f = open('cleaned_tweets.txt', 'w')
+f.write(cleantext)
+f.close()
+
 # eliminate single-letter instances that are not "I" or "A"
 # eliminate non-apostraphe punctuation (replace with a whitespace to preserve hyphenated things)
 
