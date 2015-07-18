@@ -52,15 +52,22 @@ f.close()
 
 # now follow approach strategy
 
-def find_ngrams(input_list, n):
-  return zip(*[input_list[i:] for i in range(n)])
+# solution to get ALL ngrams using CountVectorizer:
+from sklearn.feature_extraction.text import CountVectorizer
+def find_all_ngrams(input_string, max_n):
+    vectorizer = CountVectorizer(ngram_range = (1, max_n))
+    analyzer = vectorizer.build_analyzer()
+    return(analyzer(input_string))
 
-## stupidly simple alternative to the longer function below -- this appears to work well
+
+## stupidly simple alternative to the longer function below -- this appears to work ok now
 def simple_ngram_build(text, max_n = 4):
+    if type(text) == list:
+        text = " ".join(text)
     ngram_dict = dict()
-    ngrams = find_ngrams(text, max_n)
+    ngrams = find_all_ngrams(text, max_n)
     for ngram in ngrams:
-        ngram = " ".join([item for item in ngram])
+        # ngram = " ".join([item for item in ngram]) # not needed with new find_all_ngrams function
         if ngram in ngram_dict:
             ngram_dict[ngram] += 1
         else:
@@ -69,6 +76,78 @@ def simple_ngram_build(text, max_n = 4):
     return ngram_dict
 
 ## next idea: build max_n of 1 greater than what we want, then "trim" all n-grams by 1 gram and make a dict of the trimmed gram frequencies
+
+## function to get candidate keys for lookup
+def get_candidate_keys(input_text, max_input_length=4):
+    # need to clean it too, probably should make a "clean text" function
+    input_list = input_text.split()
+    if len(input_list) > max_input_length:
+        input_list = input_list[-max_input_length:]
+
+    candidate_keys = [input_list[-i:] for i in range(len(input_list))]
+    return(candidate_keys)
+
+# test
+test_input = "la laaa here we go ok this is longer than max"
+test_output = get_candidate_keys(test_input)
+# looks like it is working
+
+def get_leading_keys(lookup_dict):
+    leading_keys = [keys[:-1] for keys in lookup_dict.keys().split()]
+    return leading_keys
+
+
+'''
+IF TIME PERMITS:
+when predicting, allow for one gram (if n > 1) to be "anonymous" -
+score all predictions with each 1-gram treated as any value (i.e. search dict for a pattern matching the n-1 with any pattern standing in for the anonymous one)
+suggest highest scoring predictions
+'''
+
+
+def predict_v2(input_text, max_n):
+    prediction_keys = get_candidate_keys(input_text, max_n)
+
+
+
+
+## REMEMBER: We need to transform the input text to match the regexes used to clean the test used for our "model" otherwise it won't work well
+def predict(input_text, lookup_dict, max_n):
+    in_list = input_text.split()
+    ngram_dict = lookup_dict
+    to_predict = list()
+    if len(in_list) == 0:
+        return get_most_frequent_1gram()    # write a function to find the most frequent single word
+    else:
+        for i <= len(in_list) <= max_n:
+            to_predict.append() # the trailing n-grams -- need to figure out how to do this, could write as a separate function
+
+    # given new list of n-grams to_predict, look up those list items in the dict and weight the values according to approach strategy method (or something similar)
+
+    predicted_word = # result of weighted prediction
+
+    return predicted_word
+
+
+
+
+
+###############
+# timing test #
+###############
+from __future__ import division
+testlength = 10000
+test = rawtweets.split(" ")[:testlength]
+%timeit testdict = simple_ngram_build(test)
+# %timeit testdict = build_ngram_dict(test)
+print('^^^ time taken to cover ' + str(testlength / len(test)) + ' percent of tweet corpus')
+
+
+
+# this isn't actually currently giving what I want
+def find_ngrams(input_list, n):
+    return zip(*[input_list[i:] for i in range(n)])
+
 
 # function to build n-gram dict from a list of words (text)
 def build_ngram_dict(text, max_n = 4):
@@ -106,37 +185,6 @@ above function currently works but double-counts things for appearing as sub-n-g
 Might be ok to just grab the frequencies directly when using the "find_ngrams" function (i.e. increment 1 each for each ngram found by the function and that's it)
 
 '''
-
-
-def predict(input_text, lookup_dict, max_n):
-    in_list = input_text.split()
-    ngram_dict = lookup_dict
-    to_predict = list()
-    if len(in_list) == 0:
-        return get_most_frequent_1gram()    # write a function to find the most frequent single word
-    else:
-        for i <= len(in_list) <= max_n:
-            to_predict.append() # the trailing n-grams -- need to figure out how to do this, could write as a separate function
-
-    # given new list of n-grams to_predict, look up those list items in the dict and weight the values according to approach strategy method (or something similar)
-
-    predicted_word = # result of weighted prediction
-
-    return predicted_word
-
-
-
-
-
-###############
-# timing test #
-###############
-from __future__ import division
-testlength = 10000
-test = rawtweets.split(" ")[:testlength]
-%timeit testdict = simple_ngram_build(test)
-# %timeit testdict = build_ngram_dict(test)
-print('^^^ time taken to cover ' + str(testlength / len(test)) + ' percent of tweet corpus')
 
 
 ################################
