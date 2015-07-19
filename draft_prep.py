@@ -3,22 +3,31 @@ import codecs
 from __future__ import division
 
 os.chdir('C:/Users/Alex/Dropbox/Coursera/Capstone')
-# corpus_root ='Coursera-SwiftKey/final/en_US/'
-# wordlists = CorpusReader(corpus_root, ['en_US.blogs.txt', 'en_US.news.txt', 'en_US.twitter.txt'])
 
 # try reading in a file as a raw string
 f = codecs.open('Coursera-SwiftKey/final/en_US/en_US.twitter.txt', encoding='utf-8') # check encoding
-rawtweets = f.read()
+rawtweets = f.read()            # as one big string
+rawtweetlist = f.readlines()    # as a list of strings -- probably better
 f.close()
-
-# try reading in a file one line at at a time and adding a period as a sentinel, then use below re method
-
 
 #################################
 # Text Cleaning / Preprocessing #
 #################################
 import re
 import string
+
+def clean_text(input_text):
+    clean_text = input_text.lower()
+    clean_text = re.sub('["#$%&\()*+,/:;<=>@[\\]^_`{|}~]', '', clean_text)
+    clean_text = rawtext = re.sub('\s+', ' ', clean_text)
+    clean_text = re.sub('[!?]', '.', clean_text)
+    clean_text = re.sub('\.+', '.', clean_text)
+
+    return clean_text
+
+########################
+# Regexes for cleaning #
+########################
 
 # lowercase everything
 rawtext = rawtweets.lower()
@@ -30,9 +39,10 @@ rawtext = re.sub('\s+', ' ', rawtext)
 rawtext = re.sub('[!?]', '.', rawtext)
 # trim sentinel periods down to a single .
 rawtext = re.sub('\.+', '.', rawtext)
-# eliminate numbers
-
-# eliminate single-letters that aren't A, I, (any others i can think of)
+# eliminate numbers - maybe replace with a special sentinel, and keep a separate dict of number freqs
+rawtext = re.sub('[1234567890]+', '$NUMBER', rawtext)
+# eliminate single-letters that aren't A, I; single digits
+rawtext = re.sub(' [^ai1234567890][ |.]', '', rawtext)
 
 
 # get cleantext as a list of lists of words, each superset list is a "sentence" with semantic meaning to the ordering of the words
@@ -45,10 +55,6 @@ cleantext = [sentence.split() for sentence in rawtext.split('.')]
 f = open('cleaned_tweets.txt', 'w')
 f.write(cleantext)
 f.close()
-
-# eliminate single-letter instances that are not "I" or "A"
-# eliminate non-apostraphe punctuation (replace with a whitespace to preserve hyphenated things)
-
 
 # now follow approach strategy
 
