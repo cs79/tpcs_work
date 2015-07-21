@@ -45,8 +45,9 @@ def clean_string(input_text):
 
 # takes a couple minutes
 cleantext = clean_string(rawtext)
+cleanlist = cleantext.split('. ')   # for use with complicated_ngram_build function below
 
-# save it for later -- may not be perfect as there is still room for improvement in clean_string
+# save cleantext for later -- may not be perfect as there is still room for improvement in clean_string
 # but can use this as a baseline for now
 f = codecs.open('cleaned_tweets.txt', 'w', encoding = 'utf-8')
 f.write(cleantext)
@@ -80,7 +81,7 @@ def complicated_ngram_build(input_list, max_n = 4):
         for ngram in current_ngrams:
             if ngram == []:
                 pass
-            else if ngram in ngram_dict:
+            elif ngram in ngram_dict:
                 ngram_dict[ngram] += 1
             else:
                 ngram_dict[ngram] = 1
@@ -88,10 +89,28 @@ def complicated_ngram_build(input_list, max_n = 4):
     return ngram_dict
 
 
-ngram_dict = simple_ngram_build(cleantext)
+ngram_dict = simple_ngram_build(re.sub('\.', '', cleantext))    # dict that doesn't preserve semantic ordering
+ngram_dict_semantic_ordering = complicated_ngram_build(cleanlist)   # takes about 10 mins to run
 
-# build 2nd dict (trimmed -- n-1) for lookups
-lookup_dict = [key[:-1] for key in ngram_dict.keys() where len(key) > 1]    # something like this - not tested yet
+# build 2nd dict (trimmed -- n-1) for lookups -- takes about 4 mins (when max_n = 4 in ngram dict)
+lookup_dict = [" ".join(key.split()[:-1]) if len(key.split()) > 1 else key for key in ngram_dict_semantic_ordering.keys()]
+
+# TODO: build numbers dict
+'''
+Try something like this:
+1. from rawtext, run a regex on anything that is a number
+2. for each match, increment a number dict by 1 for that thing (similar to above fns)
+3. reference this dict in predict function when predicting numbers
+'''
+
+# a function to find the key with the highest value
+# edit this for my own purposes (something like this may be useful in predict function)
+def keywithmaxval(d):
+     """ a) create a list of the dict's keys and values;
+         b) return the key with the max value"""
+     v=list(d.values())
+     k=list(d.keys())
+     return k[v.index(max(v))]
 
 # prediction function
 '''
