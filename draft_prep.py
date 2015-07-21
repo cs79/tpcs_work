@@ -16,14 +16,16 @@ f.close()
 import re
 import string
 
-def clean_text(input_text):
-    clean_text = input_text.lower()
-    clean_text = re.sub('["#$%&\()*+,/:;<=>@[\\]^_`{|}~]', '', clean_text)
-    clean_text = rawtext = re.sub('\s+', ' ', clean_text)
-    clean_text = re.sub('[!?]', '.', clean_text)
-    clean_text = re.sub('\.+', '.', clean_text)
+def clean_string(input_text):
+    cleaned = input_text.lower()
+    cleaned = re.sub('["#$%&\()*+,/:;<=>@[\\]^_`{|}~]', '', cleaned)
+    cleaned = re.sub('\s+', ' ', cleaned)
+    cleaned = re.sub('[!?]', '.', cleaned)
+    cleaned = re.sub('\.+', '.', cleaned)
+    cleaned = re.sub('[1234567890]+', '$NUMBER', cleaned)
+    cleaned = re.sub(' [^ai1234567890][ |.]', '', cleaned)
 
-    return clean_text
+    return cleaned
 
 ########################
 # Regexes for cleaning #
