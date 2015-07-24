@@ -37,8 +37,8 @@ def clean_string(input_text):
     cleaned = re.sub('\r\n', '. ', cleaned)
     cleaned = re.sub('\s+', ' ', cleaned)
     cleaned = re.sub('[!?]', '.', cleaned)
-    cleaned = re.sub('\.+', '.', cleaned)
     cleaned = re.sub(' \.', '.', cleaned)
+    cleaned = re.sub('\.+', '.', cleaned)
     cleaned = re.sub('[1234567890]+', '$NUMBER', cleaned)
 
     return cleaned
@@ -49,7 +49,7 @@ cleanlist = cleantext.split('. ')   # for use with complicated_ngram_build funct
 
 # save cleantext for later -- may not be perfect as there is still room for improvement in clean_string
 # but can use this as a baseline for now
-f = codecs.open('cleaned_tweets.txt', 'w', encoding = 'utf-8')
+f = codecs.open('cleaned_text.txt', 'w', encoding = 'utf-8')
 f.write(cleantext)
 f.close()
 
@@ -94,6 +94,9 @@ ngram_dict_semantic_ordering = complicated_ngram_build(cleanlist)   # takes abou
 
 # build 2nd dict (trimmed -- n-1) for lookups -- takes about 4 mins (when max_n = 4 in ngram dict)
 lookup_dict = [" ".join(key.split()[:-1]) if len(key.split()) > 1 else key for key in ngram_dict_semantic_ordering.keys()]
+
+
+allwords = ' '.join(cleanlist)
 
 # TODO: build numbers dict
 '''
