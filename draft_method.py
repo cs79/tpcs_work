@@ -5,6 +5,7 @@ from __future__ import division
 import re
 import string
 from sklearn.feature_extraction.text import CountVectorizer
+import random
 
 # go to working directory with raw files
 os.chdir('C:/Users/Alex/Dropbox/Coursera/Capstone')
@@ -54,14 +55,14 @@ f.write(cleantext)
 f.close()
 
 # build the dictionary of ngrams - use functions from draft_prep when ready
-def find_all_ngrams(input_string, max_n = 4):
+def find_all_ngrams(input_string, max_n = 3):
     vectorizer = CountVectorizer(ngram_range = (1, max_n), token_pattern = '[a-z]+[\'[a-z]+|[a-z]+]')
     analyzer = vectorizer.build_analyzer()
     return(analyzer(input_string))
 
 # trying this function for getting ngram freqs first
 # this may actually pose a bigger memory issue than the "complicated" function due to lack of an inner loop
-def simple_ngram_build(text, max_n = 4):
+def simple_ngram_build(text, max_n = 3):
     if type(text) == list:
         text = " ".join(text)
     ngram_dict = dict()
@@ -76,10 +77,10 @@ def simple_ngram_build(text, max_n = 4):
     return ngram_dict
 
 # build ngrams one sentence at a time to preserve semantic integrity -- need to test this still
-def complicated_ngram_build(input_list, max_n = 4):
+def complicated_ngram_build(input_list, max_n = 3):
     ngram_dict = dict()
     for sentence in input_list:
-        current_ngrams = find_all_ngrams(sentence)
+        current_ngrams = find_all_ngrams(sentence, max_n)
         for ngram in current_ngrams:
             if ngram == []:
                 pass
@@ -92,11 +93,21 @@ def complicated_ngram_build(input_list, max_n = 4):
 
 
 #ngram_dict = simple_ngram_build(re.sub('\.', '', cleantext))    # dict that doesn't preserve semantic ordering
-ngram_dict_semantic_ordering = complicated_ngram_build(cleanlist)   # takes about 10 mins to run
+ngram_dict_semantic_ordering = complicated_ngram_build(cleanlist)   # takes about 10 mins to run w/ 4-grams
 
 # build 2nd dict (trimmed -- n-1) for lookups -- takes about 4 mins (when max_n = 4 in ngram dict)
 lookup_dict = [" ".join(key.split()[:-1]) if len(key.split()) > 1 else key for key in ngram_dict_semantic_ordering.keys()]
 
+
+
+# even with n=3, dict still has over a 50 million keys -- trying to cut this down:
+random.seed(1234)   # didn't run this on the version exported to R...
+trunc_length = int(len(cleanlist) * 0.5) # can try different %s
+random.shuffle(cleanlist)
+truncated = cleanlist[:trunc_length]
+
+trunc_ngram_dict = complicated_ngram_build(truncated)
+# cutting 50% of the sentences at random cut about 83% of the keys, so this seems like a good tradeoff
 
 # FOR EXPORTING FILES WITH PROPER LINE ENDINGS TO IMPORT INTO R
 cleantext_R = re.sub('\. ', '\r\n', cleantext)
