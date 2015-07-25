@@ -55,10 +55,11 @@ f.close()
 
 # build the dictionary of ngrams - use functions from draft_prep when ready
 def find_all_ngrams(input_string, max_n = 4):
-    vectorizer = CountVectorizer(ngram_range = (1, max_n))
+    vectorizer = CountVectorizer(ngram_range = (1, max_n), token_pattern = '[a-z]+[\'[a-z]+|[a-z]+]')
     analyzer = vectorizer.build_analyzer()
     return(analyzer(input_string))
 
+# trying this function for getting ngram freqs first
 def simple_ngram_build(text, max_n = 4):
     if type(text) == list:
         text = " ".join(text)
@@ -94,6 +95,16 @@ ngram_dict_semantic_ordering = complicated_ngram_build(cleanlist)   # takes abou
 
 # build 2nd dict (trimmed -- n-1) for lookups -- takes about 4 mins (when max_n = 4 in ngram dict)
 lookup_dict = [" ".join(key.split()[:-1]) if len(key.split()) > 1 else key for key in ngram_dict_semantic_ordering.keys()]
+
+
+# FOR EXPORTING FILES WITH PROPER LINE ENDINGS TO IMPORT INTO R
+cleantext_R = re.sub('\. ', '\r\n', cleantext)
+f = codecs.open('cleantext_R.txt', 'w', encoding = 'utf-8')
+f.write(cleantext_R)
+f.close()
+
+
+
 
 
 allwords = ' '.join(cleanlist)
