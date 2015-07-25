@@ -60,6 +60,7 @@ def find_all_ngrams(input_string, max_n = 4):
     return(analyzer(input_string))
 
 # trying this function for getting ngram freqs first
+# this may actually pose a bigger memory issue than the "complicated" function due to lack of an inner loop
 def simple_ngram_build(text, max_n = 4):
     if type(text) == list:
         text = " ".join(text)
@@ -90,7 +91,7 @@ def complicated_ngram_build(input_list, max_n = 4):
     return ngram_dict
 
 
-ngram_dict = simple_ngram_build(re.sub('\.', '', cleantext))    # dict that doesn't preserve semantic ordering
+#ngram_dict = simple_ngram_build(re.sub('\.', '', cleantext))    # dict that doesn't preserve semantic ordering
 ngram_dict_semantic_ordering = complicated_ngram_build(cleanlist)   # takes about 10 mins to run
 
 # build 2nd dict (trimmed -- n-1) for lookups -- takes about 4 mins (when max_n = 4 in ngram dict)
@@ -103,8 +104,19 @@ f = codecs.open('cleantext_R.txt', 'w', encoding = 'utf-8')
 f.write(cleantext_R)
 f.close()
 
+dictkeys_R = ngram_dict_semantic_ordering.keys()
+dictkeys_R = [key + '\r\n' for key in dictkeys_R]
+dictkeys_R = ''.join(dictkeys_R)
+f = codecs.open('ngramdictkeys_R.txt', 'w', encoding = 'utf-8')
+f.write(dictkeys_R)
+f.close()
 
-
+dictvalues_R = ngram_dict_semantic_ordering.values()
+dictvalues_R = [str(value) + '\r\n' for value in dictvalues_R]
+dictvalues_R = ''.join(dictvalues_R)
+f = codecs.open('ngramdictvalues_R.txt', 'w', encoding = 'utf-8')
+f.write(dictvalues_R)
+f.close()
 
 
 allwords = ' '.join(cleanlist)
