@@ -86,13 +86,13 @@ def simple_ngram_build(text, max_n = 4):
 ## next idea: build max_n of 1 greater than what we want, then "trim" all n-grams by 1 gram and make a dict of the trimmed gram frequencies
 
 ## function to get candidate keys for lookup
-def get_candidate_keys(input_text, max_input_length=4):
+def get_candidate_keys(input_text, max_input_length=3):
     # need to clean it too, probably should make a "clean text" function
     input_list = input_text.split()
     if len(input_list) > max_input_length:
         input_list = input_list[-max_input_length:]
 
-    candidate_keys = [input_list[-i:] for i in range(len(input_list))]
+    candidate_keys = [' '.join(input_list[-i:]) if len(input_list[-i:]) > 1 else input_list[-i] for i in range(len(input_list))]
     return(candidate_keys)
 
 # test
