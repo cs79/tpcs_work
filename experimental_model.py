@@ -38,3 +38,25 @@ truncated_length = int(len(cleanlist)*0.1)
 train = cleanlist[:truncated_length]    # so we can use later sequences as test / validation
 
 train_dict = complicated_ngram_build(train)
+
+## Step 7
+valid_lookups = [" ".join(key.split()[:-1]) if len(str(key).split()) > 1 else key for key in train_dict.keys()]
+
+## Candidate Key generator
+def get_candidate_keys(input_text, max_input_length=3):
+    # need to clean it too, probably should make a "clean text" function
+    input_list = input_text.split()
+    if len(input_list) > max_input_length:
+        input_list = input_list[-max_input_length:]
+
+    candidate_keys = [' '.join(input_list[-i:]) if len(input_list[-i:]) > 1 else input_list[-i] for i in range(len(input_list))]
+    return(candidate_keys)
+
+## Key match function
+# still needs testing in draft_prep
+
+## Prediction
+
+
+
+# working on this in draft_prep
