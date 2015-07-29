@@ -129,17 +129,33 @@ def key_match(candidate_key_list, valid_lookup_list, frequency_dict):
     for candidate in candidate_key_list:
         if candidate not in valid_lookup_list:
             pass
-        elif len(candidate.split()) <= 1:
-            pass
+        # elif len(candidate.split()) <= 1:
+        #     pass
         else:
             for key, value in frequency_dict.iteritems():
-                if key.startswith(candidate):
+                if key.startswith(candidate) and len(candidate.split()) == len(key.split() - 1):
                     matches = matches.append({'next_word': key.split()[-1], 'freq_match': value, 'length_weight': len(candidate.split())}, ignore_index=True)   # grab the last word
 
     return matches
 
 # this needs more testing but on a simple test it appears to be at least sort of working...
 
+'''
+this whole thing would be more efficient if the lookup were a dict of dicts,
+with valid LU key as the key, and a (dict with key = following word, val = freq) as the value
+because right now the key_match function is a linear search through the whole list of keys on every predict
+'''
+
+
+
+# TODO: test this and make sure it can be used in predict function
+def get_most_frequent_1grams(frequency_dict, return_n = 3):
+    top = pd.DataFrame(columns=['word', 'freq'])
+    for key, value in frequency_dict.iteritems():
+        if len(key.split()) == 1:
+            top = top.append({'word': key, 'freq': value}, ignore_index=True)
+
+    return top.sort('freq', ascending=False)[:return_n]
 
 
 # i think there is a bug in the function below but the logic of it is not horrible:
@@ -149,6 +165,10 @@ def predict_v2(input_text, max_n, candidate_key_list, valid_lookup_list, frequen
     top_predictions = key_match(prediction_keys, valid_lookup_list, frequency_dict)
     # do some weighting ... have added 3rd column to DF returned by key_match indicating length of matched key
     top_predictions['weighted_pred'] = top_predictions.freq_match ^ top_predictions.length_weight   # or something-- try a few things
+
+    # if the top prediction dataframe has fewer than 3 top predictions based on the keys
+    # (e.g. the input text contained completely unknown words)
+    # fill it out with most prevalent 1-grams -- write a new function for this and append the returned df
 
     return list(top_predictions.sort('weighted_pred', ascending=False).next_word[:3])    # return top 3 weighted next words
 
