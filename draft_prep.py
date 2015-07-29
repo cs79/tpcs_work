@@ -113,8 +113,44 @@ suggest highest scoring predictions
 '''
 
 
-def predict_v2(input_text, max_n):
+# scratch files for testing the below:
+test_text = 'this is a set of text to input. i\'m going to try this and see what happens.'
+test_lookups = ['this', 'is', 'text to', 'input', 'to']
+test_fdict = {'to input': 10, 'input': 12, 'text to input': 1}
+
+
+
+
+
+
+# try an intermediary function to generate key matches
+def key_match(candidate_key_list, valid_lookup_list, frequency_dict):
+    matches = pd.DataFrame(columns=['next_word', 'freq_match', 'length_weight']) # df to return
+    for candidate in candidate_key_list:
+        if candidate not in valid_lookup_list:
+            pass
+        elif len(candidate.split()) <= 1:
+            pass
+        else:
+            for key, value in frequency_dict.iteritems():
+                if key.startswith(candidate):
+                    matches = matches.append({'next_word': key.split()[-1], 'freq_match': value, 'length_weight': len(candidate.split())}, ignore_index=True)   # grab the last word
+
+    return matches
+
+# this needs more testing but on a simple test it appears to be at least sort of working...
+
+
+
+# i think there is a bug in the function below but the logic of it is not horrible:
+
+def predict_v2(input_text, max_n, candidate_key_list, valid_lookup_list, frequency_dict):
     prediction_keys = get_candidate_keys(input_text, max_n)
+    top_predictions = key_match(prediction_keys, valid_lookup_list, frequency_dict)
+    # do some weighting ... have added 3rd column to DF returned by key_match indicating length of matched key
+    top_predictions['weighted_pred'] = top_predictions.freq_match ^ top_predictions.length_weight   # or something-- try a few things
+
+    return list(top_predictions.sort('weighted_pred', ascending=False).next_word[:3])    # return top 3 weighted next words
 
 
 
