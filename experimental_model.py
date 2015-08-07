@@ -1,11 +1,41 @@
 ## Assuming we have cleantext and ngram_dict_semantic_ordering from draft_method file
-import pandas as import pd
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from __future__ import division
+# iPython command for my system
+%matplotlib qt
+
+## Step 0
+# get additional columns for dataframe: 'n', 'lookup', 'next_word'
+
+# column 'n' code now seems to work
+asdf = pd.DataFrame({'ngrams' : ['this', 'is', 'a', 'test', 'now a threegram', 'and 2gram'],
+    'frequency' : [4, 10, 3, 20, 1, 1]})
+asdf['n'] = [len(value.split()) for value in asdf.ngrams.values]
+
+# get leading, trailing as 2 new columns
+
+
+
+
 
 ## Step 1
 # graph falloff of % removal for stepped frequency:
+'''NEED TO DO THIS ONLY FOR 1-GRAMS'''
 falloff = pd.DataFrame(ngram_dict_semantic_ordering.items(), columns=['ngrams', 'frequency'])
+falloff['n'] = [len(value.split()) for value in falloff.ngrams.values]
+falloff_onegrams = falloff[falloff['n'] == 1]
+#falloff['fdbyten'] = falloff.frequency // 10
+
+# test code to see if this will work
+test = pd.DataFrame(columns=['freq', 'percentage'])
+for i in range(0,5000, 10):
+    pct = len(falloff_onegrams.loc[falloff_onegrams['frequency'] < i]) / len(falloff_onegrams)
+    test.append({'freq': i, 'percentage': pct}, ignore_index=True)
+
+plt.plot(test)
+
 
 plt.hist(falloff['frequency']//10, bins=100)    # something like this
 
