@@ -50,13 +50,13 @@ cleanlist = cleantext.split('. ')   # for use with complicated_ngram_build funct
 
 # save cleantext for later -- may not be perfect as there is still room for improvement in clean_string
 # but can use this as a baseline for now
-f = codecs.open('cleaned_text.txt', 'w', encoding = 'utf-8')
-f.write(cleantext)
-f.close()
+# f = codecs.open('cleaned_text.txt', 'w', encoding = 'utf-8')
+# f.write(cleantext)
+# f.close()
 
 # build the dictionary of ngrams - use functions from draft_prep when ready
 def find_all_ngrams(input_string, max_n = 3):
-    vectorizer = CountVectorizer(ngram_range = (1, max_n), token_pattern = '[a-z]+[\'[a-z]+|[a-z]+]')
+    vectorizer = CountVectorizer(ngram_range = (1, max_n), token_pattern = '[a-z]+[\'[a-z]*|[a-z]*]')
     analyzer = vectorizer.build_analyzer()
     return(analyzer(input_string))
 
