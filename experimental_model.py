@@ -30,18 +30,16 @@ falloff_onegrams = falloff[falloff['n'] == 1]
 
 # test code to see if this will work
 test = pd.DataFrame(columns=['freq', 'percentage'])
-for i in range(0,5000, 10):
+for i in range(0,3910, 5):
     pct = len(falloff_onegrams.loc[falloff_onegrams['frequency'] < i]) / len(falloff_onegrams)
-    test.append({'freq': i, 'percentage': pct}, ignore_index=True)
+    test = test.append({'freq': i, 'percentage': pct}, ignore_index=True)
 
-plt.plot(test)
+plt.plot(test.freq, test.percentage, 'bo')
 
-
-plt.hist(falloff['frequency']//10, bins=100)    # something like this
 
 ## Step 2
 # get list of of hapaxes and/or single words below elbow frequency (*10 if using floor divided version)
-low_freqs = [key for key in ngram_dict_semantic_ordering.keys() if len(key.split()) == 1 and ngram_dict_semantic_ordering[key] < 40]
+low_freqs = [key for key in ngram_dict_semantic_ordering.keys() if len(key.split()) == 1 and ngram_dict_semantic_ordering[key] < 5]
 
 # test = [key for key in testdict.keys() if len(key.split()) == 1 and testdict[key] < 200] # works now
 
@@ -49,11 +47,13 @@ low_freqs = [key for key in ngram_dict_semantic_ordering.keys() if len(key.split
 # pop and replace things from (2) with '.'
 low_freqs_purged = cleantext
 for word in low_freqs:
+    word = ' ' + word + ' '
     low_freqs_purged = re.sub(word, '.', low_freqs_purged)
 
 ## Step 4
 # sub '.' for ' .'
-low_freqs_purged = re.sub('\ .', '\.', low_freqs_purged)
+low_freqs_purged = re.sub(' \.', '.', low_freqs_purged)
+low_freqs_purged = re.sub('\.+', '.', low_freqs_purged)
 
 ## Step 5
 # split into list using '. ' as Step
@@ -84,7 +84,11 @@ def get_candidate_keys(input_text, max_input_length=3):
 
 ## Key match function
 # still needs testing in draft_prep
-
+'''
+per kevin: instead of using a complex key match function that requires multiple LU dicts,
+just build a very basic LU dict that ONLY stores the key + top-scoring next word
+(for each of 1, 2, 3-grams leading)
+'''
 ## Prediction
 
 
