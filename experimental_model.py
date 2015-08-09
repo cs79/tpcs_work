@@ -9,26 +9,40 @@ from __future__ import division
 ## Step 0
 # get additional columns for dataframe: 'n', 'lookup', 'next_word'
 
+# TEST CODE BELOW:
 # column 'n' code now seems to work
-asdf = pd.DataFrame({'ngrams' : ['this', 'is', 'a', 'test', 'now a threegram', 'and 2gram'],
-    'frequency' : [4, 10, 3, 20, 1, 1]})
+asdf = pd.DataFrame({'ngrams' : ['this', 'is', 'a', 'test', 'now a threegram', 'and 2gram', 'now a dupe'],
+    'frequency' : [4, 10, 3, 20, 1, 1, 3]})
 asdf['n'] = [len(value.split()) for value in asdf.ngrams.values]
 
 # get leading, trailing as 2 new columns
+# (below appears to work but not sure about processing time req'd for a big DF)
+asdf['leading']  = [" ".join(value.split()[:-1]) if len(value.split()) > 1 else value for value in asdf.ngrams.values]
+asdf['trailing'] = [value.split()[-1] if len(value.split()) >1 else 'NA' for value in asdf.ngrams.values]
 
+## Step 0.5
+# do the above for real data, not fake data
+dict_df = pd.DataFrame(ngram_dict_semantic_ordering.items(), columns=['ngrams', 'frequency'])
+dict_df['n'] = [len(value.split()) for value in dict_df.ngrams.values]
+dict_df['leading'] = [" ".join(value.split()[:-1]) if len(value.split()) > 1 else value for value in dict_df.ngrams.values]
+dict_df['trailing'] = [value.split()[-1] if len(value.split()) >1 else 'NA' for value in dict_df.ngrams.values]
 
+# save this as a CSV or text file that R will be able to read and check the filesize
+dict_df.to_csv('lookup_outfile.csv')
 
 
 
 ## Step 1
 # graph falloff of % removal for stepped frequency:
-'''NEED TO DO THIS ONLY FOR 1-GRAMS'''
+'''NEED TO DO THIS ONLY FOR 1-GRAMS
+- also can use new dict_df above instead of reconstructing the dict again here'''
 falloff = pd.DataFrame(ngram_dict_semantic_ordering.items(), columns=['ngrams', 'frequency'])
 falloff['n'] = [len(value.split()) for value in falloff.ngrams.values]
 falloff_onegrams = falloff[falloff['n'] == 1]
 #falloff['fdbyten'] = falloff.frequency // 10
 
-# test code to see if this will work
+# REPLACE RANGE VALUES WITH REASONABLE ONES FOR ACTUAL DATA / SAMPLE
+# this code works though
 test = pd.DataFrame(columns=['freq', 'percentage'])
 for i in range(0,3910, 5):
     pct = len(falloff_onegrams.loc[falloff_onegrams['frequency'] < i]) / len(falloff_onegrams)
@@ -39,12 +53,14 @@ plt.plot(test.freq, test.percentage, 'bo')
 
 ## Step 2
 # get list of of hapaxes and/or single words below elbow frequency (*10 if using floor divided version)
-low_freqs = [key for key in ngram_dict_semantic_ordering.keys() if len(key.split()) == 1 and ngram_dict_semantic_ordering[key] < 5]
+cutoff = 5  # or whatever, based on analysis of the graph above
+low_freqs = [key for key in ngram_dict_semantic_ordering.keys() if len(key.split()) == 1 and ngram_dict_semantic_ordering[key] < cutoff]
 
 # test = [key for key in testdict.keys() if len(key.split()) == 1 and testdict[key] < 200] # works now
 
 ## Step 3
 # pop and replace things from (2) with '.'
+# RETEST THIS CODE AND STEP 4 ALSO
 low_freqs_purged = cleantext
 for word in low_freqs:
     word = ' ' + word + ' '
