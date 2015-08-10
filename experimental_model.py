@@ -30,6 +30,8 @@ dict_df['trailing'] = [value.split()[-1] if len(value.split()) >1 else 'NA' for 
 # save this as a CSV or text file that R will be able to read and check the filesize
 dict_df.to_csv('lookup_outfile.csv')
 
+no_hapaxes = dict_df[dict_df.frequency > 1]
+no_hapaxes.to_csv('lookup_no_hapaxes.csv')      # 72 MB with a 10% sample of the original data
 
 
 ## Step 1
