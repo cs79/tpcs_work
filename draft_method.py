@@ -62,19 +62,19 @@ def find_all_ngrams(input_string, max_n = 3):
 
 # trying this function for getting ngram freqs first
 # this may actually pose a bigger memory issue than the "complicated" function due to lack of an inner loop
-def simple_ngram_build(text, max_n = 3):
-    if type(text) == list:
-        text = " ".join(text)
-    ngram_dict = dict()
-    ngrams = find_all_ngrams(text, max_n)
-    for ngram in ngrams:
-        # ngram = " ".join([item for item in ngram]) # not needed with new find_all_ngrams function
-        if ngram in ngram_dict:
-            ngram_dict[ngram] += 1
-        else:
-            ngram_dict[ngram] = 1
-
-    return ngram_dict
+# def simple_ngram_build(text, max_n = 3):
+#     if type(text) == list:
+#         text = " ".join(text)
+#     ngram_dict = dict()
+#     ngrams = find_all_ngrams(text, max_n)
+#     for ngram in ngrams:
+#         # ngram = " ".join([item for item in ngram]) # not needed with new find_all_ngrams function
+#         if ngram in ngram_dict:
+#             ngram_dict[ngram] += 1
+#         else:
+#             ngram_dict[ngram] = 1
+#
+#     return ngram_dict
 
 # build ngrams one sentence at a time to preserve semantic integrity -- need to test this still
 def complicated_ngram_build(input_list, max_n = 3):
@@ -92,8 +92,16 @@ def complicated_ngram_build(input_list, max_n = 3):
     return ngram_dict
 
 
+# sample for memory saving
+random.seed(1234)
+random.shuffle(cleanlist)
+trunc_length = len(cleanlist) // 10
+cleansample = cleanlist[:trunc_length]
+
 #ngram_dict = simple_ngram_build(re.sub('\.', '', cleantext))    # dict that doesn't preserve semantic ordering
-ngram_dict_semantic_ordering = complicated_ngram_build(cleanlist)   # takes about 10 mins to run w/ 4-grams
+ngram_dict_semantic_ordering = complicated_ngram_build(cleansample, 4)   # takes about 10 mins to run w/ 4-grams
+
+# fork here - alternative approach pursued in experimental_model.py
 
 # build 2nd dict (trimmed -- n-1) for lookups -- takes about 4 mins (when max_n = 4 in ngram dict)
 lookup_dict = [" ".join(key.split()[:-1]) if len(key.split()) > 1 else key for key in ngram_dict_semantic_ordering.keys()]
