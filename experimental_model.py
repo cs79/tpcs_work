@@ -24,14 +24,30 @@ asdf['trailing'] = [value.split()[-1] if len(value.split()) >1 else 'NA' for val
 # do the above for real data, not fake data
 dict_df = pd.DataFrame(ngram_dict_semantic_ordering.items(), columns=['ngrams', 'frequency'])
 dict_df['n'] = [len(value.split()) for value in dict_df.ngrams.values]
+
+# FORK: get rid of frequency = 1 except for top freqency 1-grams:
+dict_df = dict_df[dict_df.frequency > 1]
+len(dict_df[dict_df.n == 1]) / len(dict_df)
+# then get rid of all but the top few 1-grams to use as filler predictions
+keeper_1grams = dict_df[dict_df.n == 1].sort('frequency', ascending=False)[:10]
+dict_df = dict_df[dict_df.n > 1].append(keeper_1grams)
+
+# now get leading, trailing
 dict_df['leading'] = [" ".join(value.split()[:-1]) if len(value.split()) > 1 else value for value in dict_df.ngrams.values]
 dict_df['trailing'] = [value.split()[-1] if len(value.split()) >1 else 'NA' for value in dict_df.ngrams.values]
 
 # save this as a CSV or text file that R will be able to read and check the filesize
 dict_df.to_csv('lookup_outfile.csv')
 
-no_hapaxes = dict_df[dict_df.frequency > 1]
-no_hapaxes.to_csv('lookup_no_hapaxes.csv')      # 72 MB with a 10% sample of the original data
+test = pd.DataFrame(columns=['freq', 'percentage'])
+for i in range(0,1000, 5):
+    pct = len(dict_df[dict_df.frequency < i]) / len(dict_df)
+    test = test.append({'freq': i, 'percentage': pct}, ignore_index=True)
+
+plt.plot(test.freq, test.percentage, 'bo')
+
+# no_hapaxes = dict_df[dict_df.frequency > 1]
+# no_hapaxes.to_csv('lookup_no_hapaxes.csv')      # 72 MB with a 10% sample of the original data
 
 
 ## Step 1

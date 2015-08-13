@@ -99,8 +99,10 @@ trunc_length = len(cleanlist) // 10
 cleansample = cleanlist[:trunc_length]
 
 #ngram_dict = simple_ngram_build(re.sub('\.', '', cleantext))    # dict that doesn't preserve semantic ordering
-ngram_dict_semantic_ordering = complicated_ngram_build(cleansample, 4)   # takes about 10 mins to run w/ 4-grams
-
+# fast build on sample of data
+ngram_dict_semantic_ordering = complicated_ngram_build(cleansample, 4)
+# takes about 10 mins to run w/ 4-grams on ALL the data
+ngram_dict_semantic_ordering = complicated_ngram_build(cleanlist, 4)
 # fork here - alternative approach pursued in experimental_model.py
 
 # build 2nd dict (trimmed -- n-1) for lookups -- takes about 4 mins (when max_n = 4 in ngram dict)
