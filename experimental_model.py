@@ -25,9 +25,8 @@ asdf['trailing'] = [value.split()[-1] if len(value.split()) >1 else 'NA' for val
 dict_df = pd.DataFrame(ngram_dict_semantic_ordering.items(), columns=['ngrams', 'frequency'])
 dict_df['n'] = [len(value.split()) for value in dict_df.ngrams.values]
 
-# FORK: get rid of frequency = 1 except for top freqency 1-grams:
-dict_df = dict_df[dict_df.frequency > 1]
-len(dict_df[dict_df.n == 1]) / len(dict_df)
+# FORK: get rid of frequency < 10 (determined analytically via plotting code below):
+dict_df = dict_df[dict_df.frequency > 10]
 # then get rid of all but the top few 1-grams to use as filler predictions
 keeper_1grams = dict_df[dict_df.n == 1].sort('frequency', ascending=False)[:10]
 dict_df = dict_df[dict_df.n > 1].append(keeper_1grams)
@@ -38,7 +37,18 @@ dict_df['trailing'] = [value.split()[-1] if len(value.split()) >1 else 'NA' for 
 
 # save this as a CSV or text file that R will be able to read and check the filesize
 dict_df.to_csv('lookup_outfile.csv')
+#alternatively pruned file via fork method:
+dict_df.to_csv('alt_pruned_lookup.csv')
+'''
+STILL TO CLEAN HERE:
+manually remove "number" as an entry since it is coming from my cleaning function
 
+STILL TO FIX IN R:
+clean the string in a way that will match my cleaned dict (try to reproduce my regexes in R)
+see if scoring by exponentiating the frequency by N produces better results (right now score is using multiplication)
+'''
+
+# code to find cutoff point to use in the FORK above:
 test = pd.DataFrame(columns=['freq', 'percentage'])
 for i in range(0,1000, 5):
     pct = len(dict_df[dict_df.frequency < i]) / len(dict_df)

@@ -35,6 +35,7 @@ def clean_string(input_text):
     cleaned = input_text.lower()
     cleaned = re.sub('["#$%&\()*+,/:;<=>@[\\]^_`{|}~]', '', cleaned)
     cleaned = re.sub(' [^ai1234567890][ |\.]', ' ', cleaned)
+    # try getting rid of numbers entirely and not using the last re.sub here
     cleaned = re.sub('\r\n', '. ', cleaned)
     cleaned = re.sub('\s+', ' ', cleaned)
     cleaned = re.sub('[!?]', '.', cleaned)
