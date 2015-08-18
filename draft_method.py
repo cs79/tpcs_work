@@ -92,6 +92,30 @@ def complicated_ngram_build(input_list, max_n = 3):
 
     return ngram_dict
 
+'''
+Various generator attempts start here:
+'''
+#alt: this appears to function as I want it to...
+text = "this is some text"
+gen = (find_all_ngrams(' '.join(text.split()[i:i+4])) for i in range(len(text.split())))
+
+# this is incredibly inefficient, defeating the purpose:
+rawgen = (find_all_ngrams(' '.join(rawtext.split()[i:i+4])) for i in range(len(rawtext.split())))
+
+def ngram_generator(input_text, max_n = 4):
+    start = 0
+    while True:
+        yield find_all_ngrams(' '.join(input_text.split()[start:max_n]))
+        start += 1
+
+def generator_ngram_build(input_text, max_n = 4):
+    ngram_dict = dict()
+    for i in range(len(input_text.split())):
+        print ngram_generator(input_text).next()
+
+'''
+End of generator attempts
+'''
 
 # sample for memory saving
 random.seed(1234)
