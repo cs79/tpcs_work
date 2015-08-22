@@ -88,5 +88,10 @@ dict_df = dict_df[dict_df.n > 1].append(keeper_1grams)
 dict_df['leading'] = [" ".join(value.split()[:-1]) if len(value.split()) > 1 else value for value in dict_df.ngrams.values]
 dict_df['trailing'] = [value.split()[-1] if len(value.split()) >1 else 'NA' for value in dict_df.ngrams.values]
 
+# manually remove all the trailing singletons that aren't "a" or "i" that didn't get killed by regexes
+mask  = [item in ['a', 'i'] if len(item) == 1 else True for item in dict_df.trailing]
+dict_df = dict_df[mask]
+
 # write out for use in R:
 dict_df.to_csv('lookup_outfile_no_numbers.csv')
+dict_df.to_csv('lookup_outfile_CLEAN.csv')
